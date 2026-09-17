@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6a625a"/>
+      <stop offset="40%" stop-color="#5e5650"/>
+      <stop offset="70%" stop-color="#706860"/>
+      <stop offset="100%" stop-color="#645c54"/>
+    </linearGradient>
+    <filter id="sn">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="5" seed="7"/>
+      <feColorMatrix type="saturate" values="0.1"/>
+    </filter>
+    <filter id="sv">
+      <feTurbulence type="turbulence" baseFrequency="0.008 0.003" numOctaves="4" seed="12"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.35  0 0 0 0 0.32  0 0 0 0 0.28  0 0 0 2 -0.6"/>
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#sg)"/>
+  <rect width="100%" height="100%" filter="url(#sv)" opacity="0.12"/>
+  <rect width="100%" height="100%" filter="url(#sn)" opacity="0.2"/>
+  <line x1="0" y1="256" x2="512" y2="256" stroke="#504840" stroke-width="0.5" opacity="0.2"/>
+  <line x1="256" y1="0" x2="256" y2="512" stroke="#504840" stroke-width="0.5" opacity="0.2"/>
+</svg>
