@@ -17,7 +17,16 @@ export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 80);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -28,17 +37,24 @@ export default function Navigation() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-charcoal/90 backdrop-blur-md border-b border-white/5"
-            : "bg-transparent"
-        }`}
+        style={{
+          backgroundColor: scrolled ? "rgba(26, 26, 26, 0.92)" : "rgba(26, 26, 26, 0)",
+          backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.05)" : "1px solid transparent",
+          transition: "background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-bottom 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
+        className="fixed top-0 left-0 right-0 z-50"
       >
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between h-20">
           <a href="#" className="relative z-50">
-            <span className="font-serif text-2xl tracking-[0.2em] text-cream">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="font-serif text-2xl tracking-[0.2em] text-cream block"
+            >
               TERRA
-            </span>
+            </motion.span>
           </a>
 
           <div className="hidden lg:flex items-center gap-10">
