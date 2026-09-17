@@ -59,8 +59,8 @@ function CameraController({
       makeDefault
       enablePan={false}
       minDistance={2}
-      maxDistance={8}
-      minPolarAngle={Math.PI * 0.15}
+      maxDistance={14}
+      minPolarAngle={Math.PI * 0.1}
       maxPolarAngle={Math.PI * 0.55}
       target={[0, 1.2, 0]}
       enableDamping
