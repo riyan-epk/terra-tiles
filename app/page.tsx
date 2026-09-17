@@ -1,6 +1,7 @@
 "use client";
 
 import Navigation from "./components/Navigation";
+import SmoothScroll from "./components/SmoothScroll";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Categories from "./components/Categories";
@@ -14,6 +15,7 @@ import Footer from "./components/Footer";
 export default function Home() {
   return (
     <main>
+      <SmoothScroll />
       <Navigation />
       <Hero />
       <About />

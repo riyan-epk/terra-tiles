@@ -89,13 +89,13 @@ export default function Scene({
     <Canvas
       shadows
       dpr={[1, 1.5]}
-      camera={{ position: [3, 2.5, 4], fov: 50, near: 0.1, far: 100 }}
+      camera={{ position: [3.5, 2.8, 4.5], fov: 45, near: 0.1, far: 100 }}
       gl={{
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.1,
       }}
-      style={{ background: "#1a1a1a" }}
+      style={{ background: "#1a1a1a", width: "100%", height: "100%" }}
     >
       <Lighting />
       <CameraController resetCamera={onResetCamera} onResetDone={onResetDone} />

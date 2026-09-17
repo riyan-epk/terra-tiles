@@ -19,10 +19,20 @@
 }
 
 @layer base {
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
   html {
-    scroll-behavior: smooth;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
   }
 
   body {
@@ -32,11 +42,6 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  section {
-    will-change: transform;
-    transform: translateZ(0);
   }
 
   ::selection {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import * as THREE from "three";
 import TileSelector from "./TileSelector";
@@ -19,36 +19,32 @@ export default function VisualizerPage() {
   const textureCache = useMemo(() => new Map<string, THREE.Texture>(), []);
 
   return (
-    <div className="min-h-screen bg-charcoal flex flex-col">
-      {/* Nav bar */}
-      <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 flex-shrink-0">
+    <div className="h-dvh bg-charcoal flex flex-col overflow-hidden">
+      <header className="h-14 lg:h-16 border-b border-white/5 flex items-center justify-between px-6 flex-shrink-0">
         <a href="/" className="font-serif text-xl tracking-[0.2em] text-cream">
           TERRA
         </a>
-        <div className="flex items-center gap-6">
-          <a
-            href="/"
-            className="text-[12px] tracking-[0.12em] uppercase text-stone-light/50 hover:text-cream transition-colors"
-          >
-            Back to Home
-          </a>
-        </div>
+        <a
+          href="/"
+          className="text-[12px] tracking-[0.12em] uppercase text-stone-light/50 hover:text-cream transition-colors"
+        >
+          Back to Home
+        </a>
       </header>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* 3D Viewport */}
-        <div className="flex-1 relative">
-          <Scene
-            selectedTile={selectedTile}
-            surfaceTarget={surfaceTarget}
-            textureCache={textureCache}
-            onResetCamera={resetCamera}
-            onResetDone={() => setResetCamera(false)}
-          />
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+        <div className="flex-1 relative min-h-0">
+          <div className="absolute inset-0">
+            <Scene
+              selectedTile={selectedTile}
+              surfaceTarget={surfaceTarget}
+              textureCache={textureCache}
+              onResetCamera={resetCamera}
+              onResetDone={() => setResetCamera(false)}
+            />
+          </div>
 
-          {/* Viewport overlay controls */}
-          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between pointer-events-none">
+          <div className="absolute bottom-20 lg:bottom-4 left-4 right-4 flex items-end justify-between pointer-events-none z-10">
             <div className="pointer-events-auto flex gap-2">
               <button
                 onClick={() => setResetCamera(true)}
@@ -71,7 +67,6 @@ export default function VisualizerPage() {
               </button>
             </div>
 
-            {/* Current tile indicator */}
             {selectedTile && (
               <div className="pointer-events-auto bg-charcoal/80 backdrop-blur-sm border border-white/10 px-4 py-2.5 flex items-center gap-3">
                 <div className="w-8 h-8 overflow-hidden border border-gold/30">
@@ -86,28 +81,25 @@ export default function VisualizerPage() {
                     {selectedTile.name}
                   </p>
                   <p className="text-stone-light/40 text-[9px] uppercase tracking-wider">
-                    {selectedTile.category} · {selectedTile.size}
+                    {selectedTile.category} &middot; {selectedTile.size}
                   </p>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Interaction hint */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-stone-light/30 text-[10px] tracking-wider uppercase pointer-events-none">
-            Drag to rotate · Scroll to zoom
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-stone-light/30 text-[10px] tracking-wider uppercase pointer-events-none z-10">
+            Drag to rotate &middot; Scroll to zoom
           </div>
 
-          {/* Mobile toggle */}
           <button
             onClick={() => setMobilePanel(!mobilePanel)}
-            className="lg:hidden absolute top-4 right-4 bg-charcoal/80 backdrop-blur-sm border border-white/10 text-cream px-4 py-2 text-[11px] tracking-wider uppercase"
+            className="lg:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-gold text-charcoal font-medium px-6 py-3 text-[12px] tracking-[0.15em] uppercase z-20"
           >
-            {mobilePanel ? "Close" : "Select Tile"}
+            {mobilePanel ? "Close Panel" : "Select Tile"}
           </button>
         </div>
 
-        {/* Tile selector panel — desktop */}
         <div className="hidden lg:block w-[340px] border-l border-white/5 bg-charcoal overflow-hidden">
           <TileSelector
             selectedTile={selectedTile}
@@ -118,9 +110,9 @@ export default function VisualizerPage() {
           />
         </div>
 
-        {/* Tile selector panel — mobile */}
         {mobilePanel && (
-          <div className="lg:hidden absolute inset-x-0 bottom-0 h-[60vh] bg-charcoal border-t border-white/5 z-30 overflow-hidden">
+          <div className="lg:hidden absolute inset-x-0 bottom-0 h-[65vh] bg-charcoal border-t border-white/5 z-30 overflow-hidden rounded-t-2xl">
+            <div className="w-10 h-1 bg-stone-dark/40 rounded-full mx-auto mt-3 mb-1" />
             <TileSelector
               selectedTile={selectedTile}
               onSelectTile={(tile) => {
