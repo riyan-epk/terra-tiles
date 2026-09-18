@@ -2,72 +2,27 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { textures } from "./placeholders";
-
-const filters = ["All", "Marble", "Wood", "Stone", "Concrete", "Mosaic"];
-
-const products = [
-  {
-    name: "Calacatta Oro",
-    category: "Marble",
-    size: "120×120 cm",
-    finish: "Polished",
-    image: textures.marbleWhite,
-  },
-  {
-    name: "Rovere Naturale",
-    category: "Wood",
-    size: "20×120 cm",
-    finish: "Matte",
-    image: textures.woodGrain,
-  },
-  {
-    name: "Pietra Grey",
-    category: "Stone",
-    size: "60×120 cm",
-    finish: "Honed",
-    image: textures.stoneGrey,
-  },
-  {
-    name: "Statuario Venato",
-    category: "Marble",
-    size: "80×160 cm",
-    finish: "Satin",
-    image: textures.heroMarble,
-  },
-  {
-    name: "Portland Ash",
-    category: "Concrete",
-    size: "60×60 cm",
-    finish: "Textured",
-    image: textures.concrete,
-  },
-  {
-    name: "Hex Bianco",
-    category: "Mosaic",
-    size: "Sheet",
-    finish: "Matte",
-    image: textures.mosaic,
-  },
-  {
-    name: "Emperador Dark",
-    category: "Marble",
-    size: "60×120 cm",
-    finish: "Polished",
-    image: textures.terracotta,
-  },
-  {
-    name: "Noce Americano",
-    category: "Wood",
-    size: "30×120 cm",
-    finish: "Natural",
-    image: textures.woodGrain,
-  },
-];
+import { useTenant } from "../../lib/tenant/TenantProvider";
 
 export default function ProductShowcase() {
+  const { products: tenantProducts, categories } = useTenant();
   const [activeFilter, setActiveFilter] = useState("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
+
+  const nameById = new Map(categories.map((c) => [c.id, c.name]));
+  const products = tenantProducts.map((p) => ({
+    name: p.name,
+    category: nameById.get(p.categoryId) ?? "Other",
+    size: p.size,
+    finish: p.finish ?? "—",
+    image: p.texture,
+  }));
+  const filters = [
+    "All",
+    ...categories
+      .filter((c) => tenantProducts.some((p) => p.categoryId === c.id))
+      .map((c) => c.name),
+  ];
 
   const filtered =
     activeFilter === "All"

@@ -25,6 +25,8 @@ export interface Product {
   normalMap?: string;
   /** Dominant colour, used for UI swatches and material tint fallback. */
   color: string;
+  /** Surface finish, e.g. "Polished", "Honed", "Matte". */
+  finish?: string;
   /** PBR material params consumed by the visualizer. */
   roughness: number;
   metalness: number;
@@ -81,6 +83,14 @@ export interface TenantTheme {
   fontImports: string[];
 }
 
+/** A client testimonial shown in the marquee. */
+export interface Testimonial {
+  quote: string;
+  author: string;
+  role: string;
+  project: string;
+}
+
 /** Marketing copy + identity that fills the shared premium template per client. */
 export interface TenantContent {
   /** Short eyebrow shown above the hero headline. */
@@ -90,9 +100,13 @@ export interface TenantContent {
   heroSubline: string;
   /** Full-bleed hero background image URL. */
   heroImage: string;
+  /** Eyebrow above the about section (e.g. "Est. 1987"). */
+  aboutEyebrow: string;
   aboutTitle: string;
   aboutBody: string;
   stats: { value: string; label: string }[];
+  testimonialsEyebrow: string;
+  testimonials: Testimonial[];
 }
 
 export interface TenantContact {

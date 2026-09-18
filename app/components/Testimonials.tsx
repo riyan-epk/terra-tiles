@@ -1,39 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-
-const testimonials = [
-  {
-    quote:
-      "Terra's marble collection elevated our hotel lobby from beautiful to unforgettable. The veining consistency across 400 square meters was flawless.",
-    author: "Arjun Mehta",
-    role: "Principal, Mehta & Associates Architecture",
-    project: "The Grand Meridian Hotel",
-  },
-  {
-    quote:
-      "Working with Terra changed how we specify surfaces. Their material library and technical support is unmatched in the region.",
-    author: "Sofia Castellano",
-    role: "Interior Design Director, Studio Bianco",
-    project: "Casa Serena Residences",
-  },
-  {
-    quote:
-      "The wood-look porcelain they sourced for our restaurant chain has held up beautifully after two years of heavy foot traffic. Not a single replacement needed.",
-    author: "David Chen",
-    role: "VP of Construction, Atlas Hospitality Group",
-    project: "Ember Kitchen — 12 Locations",
-  },
-  {
-    quote:
-      "From sample selection to final installation support, Terra's process is as refined as their product. They understand what architects actually need.",
-    author: "Lena Björk",
-    role: "Senior Architect, Nordic Design Collective",
-    project: "Malmö Cultural Center",
-  },
-];
+import { useTenant } from "../../lib/tenant/TenantProvider";
 
 export default function Testimonials() {
+  const { tenant } = useTenant();
+  const testimonials = tenant.content.testimonials;
   return (
     <section className="relative py-32 md:py-40 bg-charcoal-light grain-overlay overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 md:px-16 mb-20">
@@ -44,7 +16,7 @@ export default function Testimonials() {
           transition={{ duration: 0.8 }}
         >
           <p className="text-gold text-[12px] tracking-[0.3em] uppercase mb-4">
-            Trusted By
+            {tenant.content.testimonialsEyebrow}
           </p>
           <h2 className="font-serif text-4xl md:text-5xl text-cream">
             What They Say

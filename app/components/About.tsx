@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { textures } from "./placeholders";
+import { useTenant } from "../../lib/tenant/TenantProvider";
 
 const fadeInLeft = {
   hidden: { opacity: 0, x: -40 },
@@ -19,6 +20,12 @@ const fadeInUp = {
 };
 
 export default function About() {
+  const { tenant, products } = useTenant();
+  const { content } = tenant;
+  const titleLines = content.aboutTitle.split("\n");
+  // Showcase the tenant's own materials rather than a generic image.
+  const featureImage = products[0]?.texture ?? textures.marbleWhite;
+  const accentImage = products[1]?.texture ?? textures.interiorAccent;
   return (
     <section id="about" className="relative py-32 md:py-40 grain-overlay bg-charcoal">
       <div className="max-w-[1400px] mx-auto px-6 md:px-16">
@@ -31,46 +38,31 @@ export default function About() {
             className="lg:col-span-5 lg:col-start-1"
           >
             <p className="text-gold text-[12px] tracking-[0.3em] uppercase mb-6">
-              Est. 1987
+              {content.aboutEyebrow}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl text-cream leading-[1.15] mb-8">
-              Crafted for
-              <br />
-              Architecture
+              {titleLines.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < titleLines.length - 1 && <br />}
+                </span>
+              ))}
             </h2>
             <div className="space-y-5 text-stone-light/60 leading-relaxed text-[15px]">
-              <p>
-                For over three decades, Terra has sourced and curated the
-                world's finest architectural surfaces. From quarries in Carrara
-                to kilns in Sassuolo, every tile in our collection has been
-                selected for its material integrity and visual depth.
-              </p>
-              <p>
-                We work with architects, interior designers, and discerning
-                homeowners who understand that surfaces aren't just finishes —
-                they're the foundation of spatial character.
-              </p>
+              <p>{content.aboutBody}</p>
             </div>
 
             <div className="mt-12 flex gap-16">
-              <div>
-                <span className="font-serif text-3xl text-cream">200+</span>
-                <p className="text-stone-light/40 text-[12px] tracking-[0.15em] uppercase mt-2">
-                  Curated Series
-                </p>
-              </div>
-              <div>
-                <span className="font-serif text-3xl text-cream">35</span>
-                <p className="text-stone-light/40 text-[12px] tracking-[0.15em] uppercase mt-2">
-                  Years of Craft
-                </p>
-              </div>
-              <div>
-                <span className="font-serif text-3xl text-cream">12</span>
-                <p className="text-stone-light/40 text-[12px] tracking-[0.15em] uppercase mt-2">
-                  Countries
-                </p>
-              </div>
+              {content.stats.map((stat) => (
+                <div key={stat.label}>
+                  <span className="font-serif text-3xl text-cream">
+                    {stat.value}
+                  </span>
+                  <p className="text-stone-light/40 text-[12px] tracking-[0.15em] uppercase mt-2">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </motion.div>
 
@@ -84,8 +76,8 @@ export default function About() {
             <div className="relative">
               <div className="aspect-[4/5] overflow-hidden">
                 <img
-                  src={textures.marbleWhite}
-                  alt="Marble tile texture detail"
+                  src={featureImage}
+                  alt={`${tenant.name} surface detail`}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-[1.5s] ease-out"
                 />
               </div>
@@ -97,8 +89,8 @@ export default function About() {
                 className="absolute -bottom-12 -left-12 w-48 md:w-64 aspect-square overflow-hidden border-4 border-charcoal hidden lg:block"
               >
                 <img
-                  src={textures.interiorAccent}
-                  alt="Interior with premium tiles"
+                  src={accentImage}
+                  alt={`${tenant.name} material detail`}
                   className="w-full h-full object-cover"
                 />
               </motion.div>

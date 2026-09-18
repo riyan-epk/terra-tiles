@@ -2,56 +2,26 @@
 
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { textures } from "./placeholders";
-
-const categories = [
-  {
-    name: "Marble Look",
-    subtitle: "Calacatta, Statuario, Carrara",
-    image: textures.marbleWhite,
-    sizes: ["60×60", "60×120", "120×120", "80×160"],
-    count: 42,
-  },
-  {
-    name: "Wood Look",
-    subtitle: "Oak, Walnut, Teak, Ash",
-    image: textures.woodGrain,
-    sizes: ["20×120", "30×120", "20×180"],
-    count: 36,
-  },
-  {
-    name: "Natural Stone",
-    subtitle: "Travertine, Slate, Limestone",
-    image: textures.stoneGrey,
-    sizes: ["60×60", "60×120", "80×80"],
-    count: 28,
-  },
-  {
-    name: "Concrete Effect",
-    subtitle: "Industrial, Brushed, Raw",
-    image: textures.concrete,
-    sizes: ["60×60", "60×120", "120×120"],
-    count: 24,
-  },
-  {
-    name: "Mosaic",
-    subtitle: "Hexagon, Herringbone, Penny",
-    image: textures.mosaic,
-    sizes: ["30×30", "Sheet"],
-    count: 31,
-  },
-  {
-    name: "Terracotta",
-    subtitle: "Handmade, Zellige, Cotto",
-    image: textures.terracotta,
-    sizes: ["10×10", "13×13", "20×20"],
-    count: 18,
-  },
-];
+import { useTenant } from "../../lib/tenant/TenantProvider";
 
 export default function Categories() {
+  const { products, categories } = useTenant();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  // Build category cards from the tenant's own catalogue.
+  const cards = categories
+    .map((cat) => {
+      const items = products.filter((p) => p.categoryId === cat.id);
+      return {
+        name: cat.name,
+        subtitle: items.map((p) => p.name).slice(0, 3).join(", "),
+        image: items[0]?.texture,
+        sizes: Array.from(new Set(items.map((p) => p.size))),
+        count: items.length,
+      };
+    })
+    .filter((c) => c.count > 0);
 
   return (
     <section
@@ -100,7 +70,7 @@ export default function Categories() {
           document.addEventListener("mouseup", onUp);
         }}
       >
-        {categories.map((cat, i) => (
+        {cards.map((cat, i) => (
           <motion.div
             key={cat.name}
             initial={{ opacity: 0, y: 40 }}

@@ -2,8 +2,11 @@
 
 import { motion } from "framer-motion";
 import { textures } from "./placeholders";
+import { useTenant } from "../../lib/tenant/TenantProvider";
 
 export default function InquiryForms() {
+  const { products } = useTenant();
+  const backdrop = products[0]?.texture ?? textures.heroMarble;
   return (
     <section id="contact" className="relative bg-charcoal grain-overlay">
       <div className="max-w-[1400px] mx-auto">
@@ -12,9 +15,9 @@ export default function InquiryForms() {
           <div className="relative">
             <div className="absolute inset-0 hidden lg:block">
               <img
-                src={textures.heroMarble}
+                src={backdrop}
                 alt=""
-                className="w-full h-full object-cover opacity-30"
+                className="w-full h-full object-cover opacity-20"
               />
             </div>
 

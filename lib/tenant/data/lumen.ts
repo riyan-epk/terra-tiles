@@ -40,13 +40,38 @@ export const lumenTenant: Tenant = {
     heroSubline:
       "Glazed ceramic and porcelain tiles fired in small batches — warmth you can feel underfoot.",
     heroImage: "/tiles/hex-bianco.svg",
-    aboutTitle: "Fired by hand, finished with light",
+    aboutEyebrow: "Since 2013",
+    aboutTitle: "Fired by hand,\nfinished with light",
     aboutBody:
-      "LUMEN began in a single kiln. Today our ceramicists still glaze every collection by hand, chasing the way light settles into a matte, imperfect surface.",
+      "LUMEN began in a single kiln. Today our ceramicists still glaze every collection by hand, chasing the way light settles into a matte, imperfect surface. No two tiles are identical — and that is the point.",
     stats: [
       { value: "12", label: "Years firing" },
       { value: "80", label: "Glaze recipes" },
       { value: "6", label: "Studios" },
+    ],
+    testimonialsEyebrow: "In good company",
+    testimonials: [
+      {
+        quote:
+          "LUMEN's glazes brought a warmth to our café that customers actually comment on. The hand-made variation is the whole charm.",
+        author: "Marta Ruiz",
+        role: "Founder, Corner Coffee",
+        project: "Corner Coffee — Shoreditch",
+      },
+      {
+        quote:
+          "We clad an entire spa in Salvia Opaco. The way the matte glaze shifts through the day is something a printed tile could never do.",
+        author: "Tom Fielding",
+        role: "Architect, Fielding Studio",
+        project: "Still Water Spa",
+      },
+      {
+        quote:
+          "Beautiful terracotta, delivered on time and consistent batch to batch. Rare for a handmade product.",
+        author: "Priya Nair",
+        role: "Interior Designer",
+        project: "The Garden House",
+      },
     ],
   },
   contact: {
@@ -78,6 +103,7 @@ export const lumenProducts: Product[] = [
     price: "POA",
     texture: "/tiles/hex-bianco.svg",
     color: "#e8e0d8",
+    finish: "Gloss",
     roughness: 0.2,
     metalness: 0.02,
     repeatX: 5,
@@ -95,6 +121,7 @@ export const lumenProducts: Product[] = [
     price: "POA",
     texture: "/tiles/rovere-naturale.svg",
     color: "#b5714a",
+    finish: "Matte",
     roughness: 0.8,
     metalness: 0.0,
     repeatX: 5,
@@ -112,6 +139,7 @@ export const lumenProducts: Product[] = [
     price: "POA",
     texture: "/tiles/portland-ash.svg",
     color: "#9a9186",
+    finish: "Satin",
     roughness: 0.6,
     metalness: 0.0,
     repeatX: 4,
@@ -129,6 +157,7 @@ export const lumenProducts: Product[] = [
     price: "POA",
     texture: "/tiles/pietra-grey.svg",
     color: "#7d8570",
+    finish: "Matte",
     roughness: 0.7,
     metalness: 0.0,
     repeatX: 6,

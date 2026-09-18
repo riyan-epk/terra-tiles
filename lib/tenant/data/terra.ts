@@ -34,13 +34,38 @@ export const terraTenant: Tenant = {
     heroSubline:
       "A curated collection of marble, stone and porcelain — engineered for architects who refuse the ordinary.",
     heroImage: "/tiles/calacatta-oro.svg",
-    aboutTitle: "The art of the surface",
+    aboutEyebrow: "Est. 1987",
+    aboutTitle: "Crafted for\nArchitecture",
     aboutBody:
-      "For three decades TERRA has sourced the world's finest stone and translated it into surfaces that live at the intersection of craft and architecture. Every collection is a study in restraint.",
+      "For three decades TERRA has sourced the world's finest stone and translated it into surfaces that live at the intersection of craft and architecture. From quarries in Carrara to kilns in Sassuolo, every collection is a study in restraint.",
     stats: [
       { value: "30+", label: "Years of craft" },
       { value: "240", label: "Curated finishes" },
       { value: "40", label: "Countries served" },
+    ],
+    testimonialsEyebrow: "Trusted by",
+    testimonials: [
+      {
+        quote:
+          "TERRA's marble elevated our hotel lobby from beautiful to unforgettable. The veining consistency across 400 square metres was flawless.",
+        author: "Arjun Mehta",
+        role: "Principal, Mehta & Associates",
+        project: "The Grand Meridian Hotel",
+      },
+      {
+        quote:
+          "Working with TERRA changed how we specify surfaces. Their material library and technical support is unmatched in the region.",
+        author: "Sofia Castellano",
+        role: "Design Director, Studio Bianco",
+        project: "Casa Serena Residences",
+      },
+      {
+        quote:
+          "The wood-look porcelain they sourced for our restaurants has held up beautifully after two years of heavy traffic — not a single replacement.",
+        author: "David Chen",
+        role: "VP Construction, Atlas Hospitality",
+        project: "Ember Kitchen — 12 Locations",
+      },
     ],
   },
   contact: {
@@ -75,6 +100,7 @@ export const terraProducts: Product[] = [
     price: "POA",
     texture: "/tiles/calacatta-oro.svg",
     color: "#f0ebe5",
+    finish: "Polished",
     roughness: 0.15,
     metalness: 0.05,
     repeatX: 3,
@@ -92,6 +118,7 @@ export const terraProducts: Product[] = [
     price: "POA",
     texture: "/tiles/rovere-naturale.svg",
     color: "#8b6b4a",
+    finish: "Matte",
     roughness: 0.7,
     metalness: 0.0,
     repeatX: 6,
@@ -109,6 +136,7 @@ export const terraProducts: Product[] = [
     price: "POA",
     texture: "/tiles/pietra-grey.svg",
     color: "#6a625a",
+    finish: "Honed",
     roughness: 0.5,
     metalness: 0.02,
     repeatX: 3,
@@ -126,6 +154,7 @@ export const terraProducts: Product[] = [
     price: "POA",
     texture: "/tiles/portland-ash.svg",
     color: "#787878",
+    finish: "Textured",
     roughness: 0.85,
     metalness: 0.0,
     repeatX: 4,
@@ -143,6 +172,7 @@ export const terraProducts: Product[] = [
     price: "POA",
     texture: "/tiles/hex-bianco.svg",
     color: "#e8e0d8",
+    finish: "Matte",
     roughness: 0.3,
     metalness: 0.02,
     repeatX: 5,
