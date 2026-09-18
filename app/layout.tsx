@@ -1,18 +1,28 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getCurrentTenant } from "../lib/tenant/resolve";
+import { themeToCssVars, googleFontsHref } from "../lib/tenant/theme";
 
-export const metadata: Metadata = {
-  title: "TERRA | Premium Architectural Tiles",
-  description: "Handcrafted surfaces for exceptional spaces",
-};
+/** Per-tenant metadata (title/description follow the active brand). */
+export async function generateMetadata(): Promise<Metadata> {
+  const tenant = await getCurrentTenant();
+  return {
+    title: `${tenant.name} | ${tenant.tagline}`,
+    description: tenant.tagline,
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const tenant = await getCurrentTenant();
+  const themeVars = themeToCssVars(tenant.theme);
+  const fontsHref = googleFontsHref(tenant.theme.fontImports);
+
   return (
-    <html lang="en">
+    <html lang="en" style={themeVars}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -20,10 +30,8 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Serif+Display&display=swap"
-          rel="stylesheet"
-        />
+        {/* Fonts follow the active tenant's brand. */}
+        <link href={fontsHref} rel="stylesheet" />
       </head>
       <body>{children}</body>
     </html>

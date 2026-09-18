@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTenant } from "../../lib/tenant/TenantProvider";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -13,6 +14,7 @@ const navLinks = [
 ];
 
 export default function Navigation() {
+  const { tenant } = useTenant();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -38,9 +40,13 @@ export default function Navigation() {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          backgroundColor: scrolled ? "rgba(26, 26, 26, 0.92)" : "rgba(26, 26, 26, 0)",
+          backgroundColor: scrolled
+            ? "color-mix(in srgb, var(--color-charcoal) 92%, transparent)"
+            : "color-mix(in srgb, var(--color-charcoal) 0%, transparent)",
           backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.05)" : "1px solid transparent",
+          borderBottom: scrolled
+            ? "1px solid color-mix(in srgb, var(--color-cream) 8%, transparent)"
+            : "1px solid transparent",
           transition: "background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-bottom 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
         className="fixed top-0 left-0 right-0 z-50"
@@ -53,7 +59,7 @@ export default function Navigation() {
               transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif text-2xl tracking-[0.2em] text-cream block"
             >
-              TERRA
+              {tenant.name}
             </motion.span>
           </a>
 

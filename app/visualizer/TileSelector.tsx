@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { tiles, tileCategories, surfaceOptions } from "./tile-data";
+import { surfaceOptions } from "./tile-data";
 import type { TileProduct, SurfaceTarget } from "./tile-data";
 
 interface TileSelectorProps {
+  tiles: TileProduct[];
+  categories: string[];
   selectedTile: TileProduct | null;
   onSelectTile: (tile: TileProduct) => void;
   surfaceTarget: SurfaceTarget;
@@ -13,6 +15,8 @@ interface TileSelectorProps {
 }
 
 export default function TileSelector({
+  tiles,
+  categories,
   selectedTile,
   onSelectTile,
   surfaceTarget,
@@ -38,7 +42,7 @@ export default function TileSelector({
 
       {/* Category filters */}
       <div className="px-5 py-3 flex flex-wrap gap-1.5 border-b border-white/5">
-        {tileCategories.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
