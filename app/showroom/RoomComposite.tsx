@@ -109,7 +109,7 @@ export default function RoomComposite({
     );
     return `M${pts.join(" L")} Z`;
   }, [scene, width, height]);
-  const feather = Math.max(6, width * 0.018);
+  const feather = Math.max(4, width * 0.01);
 
   const fullImg: React.CSSProperties = {
     position: "absolute",
