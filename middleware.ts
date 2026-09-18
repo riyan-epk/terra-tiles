@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { slugFromHost, TENANT_HEADER } from "./lib/tenant/resolve";
+import { slugFromHost, TENANT_HEADER } from "./lib/tenant/host";
 
 /** Cookie that remembers a `?tenant=` override for local/preview testing. */
 const TENANT_COOKIE = "tenant_override";
