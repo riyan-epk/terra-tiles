@@ -10,6 +10,7 @@ const navLinks = [
   { label: "Gallery", href: "#gallery" },
   { label: "Specifications", href: "#specs" },
   { label: "3D Visualizer", href: "/visualizer" },
+  { label: "Showroom", href: "/showroom" },
   { label: "Contact", href: "#contact" },
 ];
 
