@@ -14,15 +14,23 @@ interface RoomCompositeProps {
   tileHm: number;
   /** 0..1, lower roughness → glossier → stronger reflections. */
   gloss: number;
-  groutColor?: string;
 }
 
-/** One tile cell (face + surrounding grout) as a data URL, repeated as the floor. */
-function useTileCell(
+function shade(hex: [number, number, number], f: number): string {
+  const c = hex.map((v) => Math.max(0, Math.min(255, Math.round(v * f))));
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+/**
+ * Build a BLOCK of tiles (cols×rows) as a data URL, each tile a randomly
+ * flipped crop of the source so the repeat period is a whole block, not a
+ * single identical tile — which is what makes CSS-tiled marble read as fake.
+ * Grout is thin and colour-matched to the stone.
+ */
+function useTileBlock(
   texture: string,
   cellW: number,
   cellH: number,
-  groutColor: string,
   gloss: number,
 ): string | null {
   const [url, setUrl] = useState<string | null>(null);
@@ -32,41 +40,72 @@ function useTileCell(
     img.crossOrigin = "anonymous";
     img.onload = () => {
       if (cancelled) return;
-      const w = Math.max(24, Math.round(cellW));
-      const h = Math.max(24, Math.round(cellH));
+      const cw = Math.max(20, Math.round(cellW));
+      const ch = Math.max(20, Math.round(cellH));
+
+      // Average colour for a matching grout line.
+      const s = document.createElement("canvas");
+      s.width = s.height = 1;
+      const sc = s.getContext("2d");
+      let avg: [number, number, number] = [200, 195, 188];
+      if (sc) {
+        sc.drawImage(img, 0, 0, 1, 1);
+        const d = sc.getImageData(0, 0, 1, 1).data;
+        avg = [d[0], d[1], d[2]];
+      }
+      const grout = shade(avg, 0.86);
+
+      const cols = cw > 200 ? 2 : 3;
+      const rows = ch > 200 ? 2 : 3;
       const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = cw * cols;
+      canvas.height = ch * rows;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      const g = Math.max(1.4, Math.min(w, h) * 0.035);
-      ctx.fillStyle = groutColor;
-      ctx.fillRect(0, 0, w, h);
-      const fx = g / 2,
-        fy = g / 2,
-        fw = w - g,
-        fh = h - g;
+      const g = Math.max(1, Math.min(cw, ch) * 0.016); // thin grout
+
+      ctx.fillStyle = grout;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       const ar = img.width / img.height;
-      const far = fw / fh;
-      let sx = 0,
-        sy = 0,
-        sw = img.width,
-        sh = img.height;
-      if (ar > far) {
-        sw = img.height * far;
-        sx = (img.width - sw) / 2;
-      } else {
-        sh = img.width / far;
-        sy = (img.height - sh) / 2;
-      }
-      ctx.drawImage(img, sx, sy, sw, sh, fx, fy, fw, fh);
-      if (gloss > 0.3) {
-        const grad = ctx.createLinearGradient(0, 0, w, h);
-        grad.addColorStop(0, `rgba(255,255,255,${0.05 * gloss})`);
-        grad.addColorStop(0.5, "rgba(255,255,255,0)");
-        grad.addColorStop(1, `rgba(0,0,0,${0.05 * gloss})`);
-        ctx.fillStyle = grad;
-        ctx.fillRect(fx, fy, fw, fh);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = c * cw + g / 2;
+          const y = r * ch + g / 2;
+          const fw = cw - g;
+          const fh = ch - g;
+          const far = fw / fh;
+          // cover crop
+          let sw = img.width,
+            sh = img.height,
+            sx = 0,
+            sy = 0;
+          if (ar > far) {
+            sw = img.height * far;
+            sx = (img.width - sw) * Math.random();
+          } else {
+            sh = img.width / far;
+            sy = (img.height - sh) * Math.random();
+          }
+          const flipX = Math.random() < 0.5 ? -1 : 1;
+          const flipY = Math.random() < 0.5 ? -1 : 1;
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x, y, fw, fh);
+          ctx.clip();
+          ctx.translate(x + fw / 2, y + fh / 2);
+          ctx.scale(flipX, flipY);
+          ctx.drawImage(img, sx, sy, sw, sh, -fw / 2, -fh / 2, fw, fh);
+          ctx.restore();
+          if (gloss > 0.3) {
+            const grad = ctx.createLinearGradient(x, y, x + fw, y + fh);
+            grad.addColorStop(0, `rgba(255,255,255,${0.05 * gloss})`);
+            grad.addColorStop(0.5, "rgba(255,255,255,0)");
+            grad.addColorStop(1, `rgba(0,0,0,${0.04 * gloss})`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, y, fw, fh);
+          }
+        }
       }
       setUrl(canvas.toDataURL());
     };
@@ -74,7 +113,7 @@ function useTileCell(
     return () => {
       cancelled = true;
     };
-  }, [texture, cellW, cellH, groutColor, gloss]);
+  }, [texture, cellW, cellH, gloss]);
   return url;
 }
 
@@ -85,7 +124,6 @@ export default function RoomComposite({
   tileWm,
   tileHm,
   gloss,
-  groutColor = "#d7d1c7",
 }: RoomCompositeProps) {
   const height = (width * scene.height) / scene.width;
   const maskId = useId().replace(/:/g, "");
@@ -94,7 +132,9 @@ export default function RoomComposite({
   const refH = scene.floorDepthM * K;
   const cellW = tileWm * K;
   const cellH = tileHm * K;
-  const cell = useTileCell(tileTexture, cellW, cellH, groutColor, gloss);
+  const cols = cellW > 200 ? 2 : 3;
+  const rows = cellH > 200 ? 2 : 3;
+  const block = useTileBlock(tileTexture, cellW, cellH, gloss);
 
   const dst: Pt[] = useMemo(
     () => scene.floor.map((p) => ({ x: p.x * width, y: p.y * height })),
@@ -102,14 +142,13 @@ export default function RoomComposite({
   );
   const matrix = useMemo(() => cornerPinMatrix3d(refW, refH, dst), [refW, refH, dst]);
 
-  // Feathered floor mask (soft edges hide any imperfection in the outline).
   const pathD = useMemo(() => {
     const pts = (scene.clip ?? scene.floor).map(
       (p) => `${(p.x * width).toFixed(1)},${(p.y * height).toFixed(1)}`,
     );
     return `M${pts.join(" L")} Z`;
   }, [scene, width, height]);
-  const feather = Math.max(4, width * 0.01);
+  const feather = Math.max(3, width * 0.008);
 
   const fullImg: React.CSSProperties = {
     position: "absolute",
@@ -121,10 +160,8 @@ export default function RoomComposite({
 
   return (
     <div style={{ position: "relative", width, height, overflow: "hidden" }}>
-      {/* Base photograph */}
       <img src={scene.image} alt={scene.label} style={fullImg} draggable={false} />
 
-      {/* Mask definition */}
       <svg
         width={width}
         height={height}
@@ -141,7 +178,6 @@ export default function RoomComposite({
         </defs>
       </svg>
 
-      {/* Floor group: tile + its own light/shadow/reflection, masked as one */}
       <div
         style={{
           position: "absolute",
@@ -151,8 +187,7 @@ export default function RoomComposite({
           WebkitMask: `url(#m${maskId})`,
         }}
       >
-        {/* Warped tiled floor */}
-        {cell && (
+        {block && (
           <div
             style={{
               position: "absolute",
@@ -162,14 +197,14 @@ export default function RoomComposite({
               height: refH,
               transform: matrix,
               transformOrigin: "0 0",
-              backgroundImage: `url(${cell})`,
+              backgroundImage: `url(${block})`,
               backgroundRepeat: "repeat",
-              backgroundSize: `${cellW}px ${cellH}px`,
+              backgroundSize: `${cellW * cols}px ${cellH * rows}px`,
             }}
           />
         )}
 
-        {/* Broad tone from the photo's floor (shadows + gradients) */}
+        {/* Broad tone (front-bright / back-dark, soft shadows) */}
         <img
           src={scene.image}
           alt=""
@@ -177,8 +212,8 @@ export default function RoomComposite({
           style={{
             ...fullImg,
             mixBlendMode: "soft-light",
-            opacity: scene.overlay,
-            filter: "grayscale(1) contrast(1.05)",
+            opacity: Math.min(1, scene.overlay + 0.1),
+            filter: "grayscale(1) contrast(1.08)",
           }}
         />
         {/* Contact shadows */}
@@ -189,11 +224,11 @@ export default function RoomComposite({
           style={{
             ...fullImg,
             mixBlendMode: "multiply",
-            opacity: scene.overlay * 0.4,
-            filter: "grayscale(1) brightness(1.2)",
+            opacity: scene.overlay * 0.45,
+            filter: "grayscale(1) brightness(1.15)",
           }}
         />
-        {/* Bright reflections / gloss — the room mirrored in a polished floor */}
+        {/* Reflections / gloss — the room mirrored in a polished floor */}
         <img
           src={scene.image}
           alt=""
@@ -201,8 +236,8 @@ export default function RoomComposite({
           style={{
             ...fullImg,
             mixBlendMode: "screen",
-            opacity: 0.25 + gloss * 0.4,
-            filter: "grayscale(1) brightness(0.9) contrast(1.5)",
+            opacity: 0.3 + gloss * 0.45,
+            filter: "grayscale(1) brightness(0.85) contrast(1.6)",
           }}
         />
       </div>
