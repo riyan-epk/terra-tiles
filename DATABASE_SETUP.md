@@ -12,6 +12,10 @@ uses a real Postgres database and everything persists.
    like:
    `postgresql://user:password@ep-xxx.region.aws.neon.tech/neondb?sslmode=require`
 
+   > If the host contains `-pooler` (the pooled connection), append
+   > `&pgbouncer=true&connect_timeout=15` to the end so Prisma works reliably
+   > with Neon's connection pooler.
+
 > Alternative: in your Vercel project → **Storage → Create → Postgres**, then
 > copy the `DATABASE_URL` it gives you. Same result.
 
