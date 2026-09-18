@@ -1,4 +1,5 @@
 import type { Tenant, Category, Product } from "../types";
+import { tileTextures } from "../tile-textures";
 
 /**
  * Seed tenant: LUMEN Ceramica — a light, airy ceramics house.
@@ -101,7 +102,7 @@ export const lumenProducts: Product[] = [
     description: "High-gloss white glaze with gentle handmade variation.",
     size: "10×30 cm",
     price: "POA",
-    texture: "/tiles/hex-bianco.svg",
+    texture: tileTextures.bianco,
     color: "#e8e0d8",
     finish: "Gloss",
     roughness: 0.2,
@@ -119,7 +120,7 @@ export const lumenProducts: Product[] = [
     description: "Sun-baked terracotta with an aged, matte patina.",
     size: "20×20 cm",
     price: "POA",
-    texture: "/tiles/rovere-naturale.svg",
+    texture: tileTextures.wood,
     color: "#b5714a",
     finish: "Matte",
     roughness: 0.8,
@@ -137,7 +138,7 @@ export const lumenProducts: Product[] = [
     description: "Linen-textured porcelain in a soft greige.",
     size: "60×60 cm",
     price: "POA",
-    texture: "/tiles/portland-ash.svg",
+    texture: tileTextures.concrete,
     color: "#9a9186",
     finish: "Satin",
     roughness: 0.6,
@@ -155,7 +156,7 @@ export const lumenProducts: Product[] = [
     description: "Matte sage glaze that shifts with the light.",
     size: "13×13 cm",
     price: "POA",
-    texture: "/tiles/pietra-grey.svg",
+    texture: tileTextures.pietra,
     color: "#7d8570",
     finish: "Matte",
     roughness: 0.7,

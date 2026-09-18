@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { cornerPinMatrix3d, type Pt } from "./homography";
 import type { RoomScene } from "./showroom-data";
 
@@ -8,21 +8,16 @@ const K = 200; // px per metre for the (pre-warp) floor reference layer
 
 interface RoomCompositeProps {
   scene: RoomScene;
-  /** Displayed width in px; height follows the image aspect. */
   width: number;
   tileTexture: string;
   tileWm: number;
   tileHm: number;
-  /** Lower roughness → glossier → stronger reflections. */
+  /** 0..1, lower roughness → glossier → stronger reflections. */
   gloss: number;
   groutColor?: string;
 }
 
-/**
- * Build one tile "cell" (tile face + surrounding grout) as a data URL, to be
- * repeated as the floor background. Half-grout on each edge so repeats merge
- * into full grout lines between tiles.
- */
+/** One tile cell (face + surrounding grout) as a data URL, repeated as the floor. */
 function useTileCell(
   texture: string,
   cellW: number,
@@ -44,11 +39,9 @@ function useTileCell(
       canvas.height = h;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      const g = Math.max(1.2, Math.min(w, h) * 0.03); // grout width
-      // Grout fills the cell; tile face is inset by half-grout on each side.
+      const g = Math.max(1.4, Math.min(w, h) * 0.035);
       ctx.fillStyle = groutColor;
       ctx.fillRect(0, 0, w, h);
-      // Draw texture "cover" into the inset face.
       const fx = g / 2,
         fy = g / 2,
         fw = w - g,
@@ -67,12 +60,11 @@ function useTileCell(
         sy = (img.height - sh) / 2;
       }
       ctx.drawImage(img, sx, sy, sw, sh, fx, fy, fw, fh);
-      // Subtle sheen for glossy tiles.
-      if (gloss > 0.35) {
+      if (gloss > 0.3) {
         const grad = ctx.createLinearGradient(0, 0, w, h);
-        grad.addColorStop(0, `rgba(255,255,255,${0.06 * gloss})`);
+        grad.addColorStop(0, `rgba(255,255,255,${0.05 * gloss})`);
         grad.addColorStop(0.5, "rgba(255,255,255,0)");
-        grad.addColorStop(1, `rgba(0,0,0,${0.04 * gloss})`);
+        grad.addColorStop(1, `rgba(0,0,0,${0.05 * gloss})`);
         ctx.fillStyle = grad;
         ctx.fillRect(fx, fy, fw, fh);
       }
@@ -93,44 +85,73 @@ export default function RoomComposite({
   tileWm,
   tileHm,
   gloss,
-  groutColor = "#d9d3c9",
+  groutColor = "#d7d1c7",
 }: RoomCompositeProps) {
   const height = (width * scene.height) / scene.width;
+  const maskId = useId().replace(/:/g, "");
 
-  // Reference (pre-warp) layer sized to the floor's real proportions.
   const refW = scene.floorWidthM * K;
   const refH = scene.floorDepthM * K;
   const cellW = tileWm * K;
   const cellH = tileHm * K;
-
   const cell = useTileCell(tileTexture, cellW, cellH, groutColor, gloss);
 
-  // Destination floor corners in displayed px.
   const dst: Pt[] = useMemo(
     () => scene.floor.map((p) => ({ x: p.x * width, y: p.y * height })),
     [scene, width, height],
   );
   const matrix = useMemo(() => cornerPinMatrix3d(refW, refH, dst), [refW, refH, dst]);
 
-  const clipPts = (scene.clip ?? scene.floor)
-    .map((p) => `${(p.x * 100).toFixed(2)}% ${(p.y * 100).toFixed(2)}%`)
-    .join(", ");
-  const clipPath = `polygon(${clipPts})`;
+  // Feathered floor mask (soft edges hide any imperfection in the outline).
+  const pathD = useMemo(() => {
+    const pts = (scene.clip ?? scene.floor).map(
+      (p) => `${(p.x * width).toFixed(1)},${(p.y * height).toFixed(1)}`,
+    );
+    return `M${pts.join(" L")} Z`;
+  }, [scene, width, height]);
+  const feather = Math.max(6, width * 0.018);
+
+  const fullImg: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    width,
+    height,
+    display: "block",
+  };
 
   return (
-    <div
-      style={{ position: "relative", width, height, overflow: "hidden" }}
-    >
+    <div style={{ position: "relative", width, height, overflow: "hidden" }}>
       {/* Base photograph */}
-      <img
-        src={scene.image}
-        alt={scene.label}
-        style={{ position: "absolute", inset: 0, width, height, display: "block" }}
-        draggable={false}
-      />
+      <img src={scene.image} alt={scene.label} style={fullImg} draggable={false} />
 
-      {/* Warped tiled floor, clipped to the visible floor area */}
-      <div style={{ position: "absolute", inset: 0, clipPath, WebkitClipPath: clipPath }}>
+      {/* Mask definition */}
+      <svg
+        width={width}
+        height={height}
+        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+        aria-hidden
+      >
+        <defs>
+          <filter id={`b${maskId}`} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation={feather} />
+          </filter>
+          <mask id={`m${maskId}`} maskUnits="userSpaceOnUse">
+            <path d={pathD} fill="#fff" filter={`url(#b${maskId})`} />
+          </mask>
+        </defs>
+      </svg>
+
+      {/* Floor group: tile + its own light/shadow/reflection, masked as one */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          isolation: "isolate",
+          mask: `url(#m${maskId})`,
+          WebkitMask: `url(#m${maskId})`,
+        }}
+      >
+        {/* Warped tiled floor */}
         {cell && (
           <div
             style={{
@@ -147,57 +168,42 @@ export default function RoomComposite({
             }}
           />
         )}
-      </div>
 
-      {/* Re-apply the photo's own light & shadow over the new tile */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          clipPath,
-          WebkitClipPath: clipPath,
-          mixBlendMode: "soft-light",
-          opacity: scene.overlay,
-        }}
-      >
+        {/* Broad tone from the photo's floor (shadows + gradients) */}
         <img
           src={scene.image}
           alt=""
-          style={{
-            position: "absolute",
-            inset: 0,
-            width,
-            height,
-            display: "block",
-            filter: "grayscale(1) contrast(1.05) brightness(1.05)",
-          }}
           draggable={false}
+          style={{
+            ...fullImg,
+            mixBlendMode: "soft-light",
+            opacity: scene.overlay,
+            filter: "grayscale(1) contrast(1.05)",
+          }}
         />
-      </div>
-
-      {/* A second, gentler multiply pass deepens the contact shadows */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          clipPath,
-          WebkitClipPath: clipPath,
-          mixBlendMode: "multiply",
-          opacity: scene.overlay * 0.35,
-        }}
-      >
+        {/* Contact shadows */}
         <img
           src={scene.image}
           alt=""
-          style={{
-            position: "absolute",
-            inset: 0,
-            width,
-            height,
-            display: "block",
-            filter: "grayscale(1) brightness(1.15)",
-          }}
           draggable={false}
+          style={{
+            ...fullImg,
+            mixBlendMode: "multiply",
+            opacity: scene.overlay * 0.4,
+            filter: "grayscale(1) brightness(1.2)",
+          }}
+        />
+        {/* Bright reflections / gloss — the room mirrored in a polished floor */}
+        <img
+          src={scene.image}
+          alt=""
+          draggable={false}
+          style={{
+            ...fullImg,
+            mixBlendMode: "screen",
+            opacity: 0.25 + gloss * 0.4,
+            filter: "grayscale(1) brightness(0.9) contrast(1.5)",
+          }}
         />
       </div>
     </div>

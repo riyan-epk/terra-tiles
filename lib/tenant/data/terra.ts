@@ -1,4 +1,5 @@
 import type { Tenant, Category, Product } from "../types";
+import { tileTextures } from "../tile-textures";
 
 /**
  * Seed tenant: TERRA — the original dark, editorial marble house.
@@ -98,7 +99,7 @@ export const terraProducts: Product[] = [
       "Italian marble with dramatic gold veining over a warm ivory field.",
     size: "60×120 cm",
     price: "POA",
-    texture: "/tiles/calacatta-oro.svg",
+    texture: tileTextures.calacatta,
     color: "#f0ebe5",
     finish: "Polished",
     roughness: 0.15,
@@ -116,7 +117,7 @@ export const terraProducts: Product[] = [
     description: "Natural oak-effect porcelain plank with a soft matte finish.",
     size: "20×120 cm",
     price: "POA",
-    texture: "/tiles/rovere-naturale.svg",
+    texture: tileTextures.wood,
     color: "#8b6b4a",
     finish: "Matte",
     roughness: 0.7,
@@ -134,7 +135,7 @@ export const terraProducts: Product[] = [
     description: "Honed grey limestone with subtle fossil movement.",
     size: "60×120 cm",
     price: "POA",
-    texture: "/tiles/pietra-grey.svg",
+    texture: tileTextures.pietra,
     color: "#6a625a",
     finish: "Honed",
     roughness: 0.5,
@@ -152,7 +153,7 @@ export const terraProducts: Product[] = [
     description: "Industrial concrete-effect surface in a cool ash tone.",
     size: "60×60 cm",
     price: "POA",
-    texture: "/tiles/portland-ash.svg",
+    texture: tileTextures.concrete,
     color: "#787878",
     finish: "Textured",
     roughness: 0.85,
@@ -170,7 +171,7 @@ export const terraProducts: Product[] = [
     description: "Classic white hexagonal mosaic sheet for feature walls.",
     size: "Sheet",
     price: "POA",
-    texture: "/tiles/hex-bianco.svg",
+    texture: tileTextures.bianco,
     color: "#e8e0d8",
     finish: "Matte",
     roughness: 0.3,
