@@ -15,7 +15,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal/30 via-transparent to-charcoal" />
       </div>
 
-      <div className="relative z-10 h-full flex flex-col justify-end pb-24 md:pb-32 px-6 md:px-16 max-w-[1400px] mx-auto">
+      <div className="relative z-10 h-full flex flex-col justify-center md:justify-end pb-0 md:pb-32 px-6 md:px-16 max-w-[1400px] mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
