@@ -160,8 +160,24 @@ function randomId() {
   return Math.random().toString(36).slice(2, 10);
 }
 
-/** The single repository instance the app reads through. Swap for a DB impl. */
-export const repo: TenantRepository = new InMemoryRepository();
+/**
+ * The single repository instance the whole app reads through.
+ *
+ * When DATABASE_URL is configured we use the Postgres-backed PrismaRepository
+ * (persistent, production-ready); otherwise we fall back to the in-memory seed
+ * store so the app runs with zero setup. The Prisma module is only required in
+ * the DB branch so its client is never instantiated without a database.
+ */
+function createRepo(): TenantRepository {
+  if (process.env.DATABASE_URL) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PrismaRepository } = require("./prismaRepository");
+    return new PrismaRepository();
+  }
+  return new InMemoryRepository();
+}
+
+export const repo: TenantRepository = createRepo();
 
 /** Slug used on localhost / apex when no subdomain is present. */
 export const DEFAULT_TENANT_SLUG = "terra";

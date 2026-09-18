@@ -1,0 +1,88 @@
+// Prisma schema for the multi-tenant tile SaaS.
+// The rich brand config (theme / content / contact) is stored as JSON columns
+// so it mirrors the TypeScript types in lib/tenant/types.ts one-to-one; the
+// PrismaRepository casts them back. Catalogue data is relational.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id       String   @id
+  slug     String   @unique
+  name     String
+  tagline  String
+  logo     String
+  plan     String   @default("trial")
+  status   String   @default("active")
+  theme    Json
+  content  Json
+  contact  Json
+
+  categories Category[]
+  products   Product[]
+  inquiries  Inquiry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id       String @id @default(cuid())
+  tenantId String
+  name     String
+  order    Int    @default(0)
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@index([tenantId])
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  tenantId    String
+  categoryId  String
+  name        String
+  description String?
+  size        String
+  price       String  @default("POA")
+  finish      String?
+  texture     String  @db.Text // may hold a large data: URL
+  normalMap   String? @db.Text
+  color       String
+  roughness   Float   @default(0.5)
+  metalness   Float   @default(0)
+  repeatX     Float   @default(3)
+  repeatY     Float   @default(3)
+  published   Boolean @default(true)
+  order       Int     @default(0)
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([categoryId])
+}
+
+model Inquiry {
+  id            String   @id @default(cuid())
+  tenantId      String
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  message       String   @db.Text
+  productIds    String[]
+  roomDesignId  String?
+  status        String   @default("new")
+  createdAt     DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
