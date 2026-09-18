@@ -5,7 +5,14 @@ import dynamic from "next/dynamic";
 import * as THREE from "three";
 import TileSelector from "./TileSelector";
 import QuoteDialog from "../components/QuoteDialog";
+import type { RoomType } from "./Room";
 import type { TileProduct, SurfaceTarget } from "./tile-data";
+
+const ROOMS: { label: string; value: RoomType }[] = [
+  { label: "Living", value: "living" },
+  { label: "Bedroom", value: "bedroom" },
+  { label: "Bathroom", value: "bathroom" },
+];
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
@@ -24,6 +31,7 @@ export default function VisualizerClient({
     tiles[0] ?? null,
   );
   const [surfaceTarget, setSurfaceTarget] = useState<SurfaceTarget>("all");
+  const [roomType, setRoomType] = useState<RoomType>("living");
   const [resetCamera, setResetCamera] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
   const [selections, setSelections] = useState<{ id: string; name: string }[]>(
@@ -74,6 +82,7 @@ export default function VisualizerClient({
               selectedTile={selectedTile}
               surfaceTarget={surfaceTarget}
               textureCache={textureCache}
+              roomType={roomType}
               onResetCamera={resetCamera}
               onResetDone={() => setResetCamera(false)}
             />
@@ -134,7 +143,24 @@ export default function VisualizerClient({
             )}
           </div>
 
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-stone-light/30 text-[10px] tracking-wider uppercase pointer-events-none z-10">
+          {/* Room-type selector */}
+          <div className="absolute top-4 left-4 z-10 flex gap-1.5 bg-charcoal/70 backdrop-blur-sm border border-white/10 p-1">
+            {ROOMS.map((r) => (
+              <button
+                key={r.value}
+                onClick={() => setRoomType(r.value)}
+                className={`text-[10px] tracking-[0.12em] uppercase px-3 py-1.5 transition-colors ${
+                  roomType === r.value
+                    ? "bg-gold text-charcoal"
+                    : "text-stone-light/60 hover:text-cream"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-stone-light/30 text-[10px] tracking-wider uppercase pointer-events-none z-10 hidden sm:block">
             Drag to rotate &middot; Scroll to zoom
           </div>
 

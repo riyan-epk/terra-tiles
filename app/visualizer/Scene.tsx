@@ -9,13 +9,14 @@ import {
   ContactShadows,
 } from "@react-three/drei";
 import * as THREE from "three";
-import Room from "./Room";
+import Room, { type RoomType } from "./Room";
 import type { TileProduct, SurfaceTarget } from "./tile-data";
 
 interface SceneProps {
   selectedTile: TileProduct | null;
   surfaceTarget: SurfaceTarget;
   textureCache: Map<string, THREE.Texture>;
+  roomType: RoomType;
   onResetCamera: boolean;
   onResetDone: () => void;
 }
@@ -133,6 +134,7 @@ export default function Scene({
   selectedTile,
   surfaceTarget,
   textureCache,
+  roomType,
   onResetCamera,
   onResetDone,
 }: SceneProps) {
@@ -156,6 +158,7 @@ export default function Scene({
           selectedTile={selectedTile}
           surfaceTarget={surfaceTarget}
           textureCache={textureCache}
+          roomType={roomType}
         />
       </Suspense>
 
