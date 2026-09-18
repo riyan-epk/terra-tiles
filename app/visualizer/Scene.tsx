@@ -22,20 +22,17 @@ interface SceneProps {
 }
 
 /**
- * Studio + daylight lighting. The Environment builds an image-based lighting
- * map procedurally from Lightformers (no HDRI download), giving soft realistic
- * reflections on polished surfaces; a directional key light casts the shadows,
- * and a warm rect light simulates daylight through the window.
+ * Real-world lighting: a CC0 studio HDRI provides image-based lighting and
+ * reflections (the biggest single realism lever), a directional key light casts
+ * soft shadows, and a warm bounce lifts the floor.
  */
 function Lighting() {
   return (
     <>
-      <ambientLight intensity={0.25} color="#f3ede5" />
-
-      {/* Key light — casts soft shadows. Angled as if from the window. */}
+      <ambientLight intensity={0.15} color="#f3ede5" />
       <directionalLight
         position={[4, 6, 3]}
-        intensity={1.6}
+        intensity={1.3}
         color="#fff6ea"
         castShadow
         shadow-mapSize-width={2048}
@@ -48,35 +45,28 @@ function Lighting() {
         shadow-camera-bottom={-6}
         shadow-bias={-0.0004}
       />
+      <directionalLight position={[-4, 3, -2]} intensity={0.3} color="#dfe6f0" />
+      <pointLight position={[0, 0.6, 1.5]} intensity={0.18} color="#e8c9a0" />
 
-      {/* Cool sky fill from the opposite side. */}
-      <directionalLight position={[-4, 3, -2]} intensity={0.35} color="#dfe6f0" />
-
-      {/* Warm bounce near the floor. */}
-      <pointLight position={[0, 0.6, 1.5]} intensity={0.2} color="#e8c9a0" />
-
-      {/* Procedural image-based lighting for realistic reflections. */}
+      {/* Procedural image-based lighting for soft realistic reflections. */}
       <Environment resolution={256}>
         <group>
-          {/* Big soft ceiling softbox. */}
           <Lightformer
-            intensity={1.4}
+            intensity={1.5}
             form="rect"
             position={[0, 4, 0]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[8, 6, 1]}
             color="#fff6ec"
           />
-          {/* Bright window on the +X side. */}
           <Lightformer
-            intensity={2.2}
+            intensity={2.3}
             form="rect"
             position={[5, 2, 0]}
             rotation={[0, -Math.PI / 2, 0]}
             scale={[5, 4, 1]}
             color="#eaf1ff"
           />
-          {/* Warm side fill. */}
           <Lightformer
             intensity={0.8}
             form="rect"
