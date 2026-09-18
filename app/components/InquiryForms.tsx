@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { textures } from "./placeholders";
 import { useTenant } from "../../lib/tenant/TenantProvider";
+import CustomerInquiryForm from "./CustomerInquiryForm";
 
 export default function InquiryForms() {
   const { products } = useTenant();
@@ -39,85 +40,7 @@ export default function InquiryForms() {
                 specialist from our team.
               </p>
 
-              <form
-                className="space-y-6 max-w-md"
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[11px] tracking-[0.15em] uppercase text-stone-light/40 block mb-2">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full bg-transparent border-b border-stone-dark/30 text-cream py-3 text-sm focus:border-gold transition-colors duration-300 placeholder:text-stone-dark/50"
-                      placeholder="John"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] tracking-[0.15em] uppercase text-stone-light/40 block mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full bg-transparent border-b border-stone-dark/30 text-cream py-3 text-sm focus:border-gold transition-colors duration-300 placeholder:text-stone-dark/50"
-                      placeholder="Doe"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[11px] tracking-[0.15em] uppercase text-stone-light/40 block mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full bg-transparent border-b border-stone-dark/30 text-cream py-3 text-sm focus:border-gold transition-colors duration-300 placeholder:text-stone-dark/50"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[11px] tracking-[0.15em] uppercase text-stone-light/40 block mb-2">
-                    Project Type
-                  </label>
-                  <select className="w-full bg-transparent border-b border-stone-dark/30 text-cream py-3 text-sm focus:border-gold transition-colors duration-300 appearance-none cursor-pointer">
-                    <option value="" className="bg-charcoal">
-                      Select a project type
-                    </option>
-                    <option value="residential" className="bg-charcoal">
-                      Residential — New Build
-                    </option>
-                    <option value="renovation" className="bg-charcoal">
-                      Residential — Renovation
-                    </option>
-                    <option value="commercial" className="bg-charcoal">
-                      Commercial Interior
-                    </option>
-                    <option value="landscape" className="bg-charcoal">
-                      Landscape / Outdoor
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[11px] tracking-[0.15em] uppercase text-stone-light/40 block mb-2">
-                    Tell Us About Your Project
-                  </label>
-                  <textarea
-                    rows={4}
-                    className="w-full bg-transparent border-b border-stone-dark/30 text-cream py-3 text-sm focus:border-gold transition-colors duration-300 resize-none placeholder:text-stone-dark/50"
-                    placeholder="Brief description of your space, style preferences, and timeline..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full text-[13px] tracking-[0.15em] uppercase bg-cream text-charcoal py-4 hover:bg-gold transition-colors duration-300 mt-4"
-                >
-                  Send Inquiry
-                </button>
-              </form>
+              <CustomerInquiryForm />
             </motion.div>
           </div>
 

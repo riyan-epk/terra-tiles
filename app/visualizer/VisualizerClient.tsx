@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import * as THREE from "three";
 import TileSelector from "./TileSelector";
+import QuoteDialog from "../components/QuoteDialog";
 import type { TileProduct, SurfaceTarget } from "./tile-data";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
@@ -25,7 +26,22 @@ export default function VisualizerClient({
   const [surfaceTarget, setSurfaceTarget] = useState<SurfaceTarget>("all");
   const [resetCamera, setResetCamera] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
+  const [selections, setSelections] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+  const [quoteOpen, setQuoteOpen] = useState(false);
   const textureCache = useMemo(() => new Map<string, THREE.Texture>(), []);
+
+  const inSelection = (id: string) => selections.some((s) => s.id === id);
+
+  function toggleSelection(tile: TileProduct | null) {
+    if (!tile) return;
+    setSelections((prev) =>
+      prev.some((s) => s.id === tile.id)
+        ? prev.filter((s) => s.id !== tile.id)
+        : [...prev, { id: tile.id, name: tile.name }],
+    );
+  }
 
   return (
     <div className="h-dvh bg-charcoal flex flex-col overflow-hidden">
@@ -33,12 +49,22 @@ export default function VisualizerClient({
         <a href="/" className="font-serif text-xl tracking-[0.2em] text-cream">
           {brandName}
         </a>
-        <a
-          href="/"
-          className="text-[12px] tracking-[0.12em] uppercase text-stone-light/50 hover:text-cream transition-colors"
-        >
-          Back to Home
-        </a>
+        <div className="flex items-center gap-5">
+          <button
+            onClick={() => setQuoteOpen(true)}
+            disabled={selections.length === 0}
+            className="text-[11px] tracking-[0.12em] uppercase bg-gold text-charcoal px-4 py-2 hover:bg-gold-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Request Quote
+            {selections.length > 0 ? ` (${selections.length})` : ""}
+          </button>
+          <a
+            href="/"
+            className="hidden sm:inline text-[12px] tracking-[0.12em] uppercase text-stone-light/50 hover:text-cream transition-colors"
+          >
+            Back to Home
+          </a>
+        </div>
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
@@ -93,6 +119,17 @@ export default function VisualizerClient({
                     {selectedTile.category} &middot; {selectedTile.size}
                   </p>
                 </div>
+                <button
+                  onClick={() => toggleSelection(selectedTile)}
+                  className={`ml-1 text-[10px] tracking-[0.12em] uppercase px-2.5 py-1.5 border transition-colors ${
+                    inSelection(selectedTile.id)
+                      ? "border-gold bg-gold text-charcoal"
+                      : "border-cream/20 text-cream/70 hover:border-gold hover:text-gold"
+                  }`}
+                  title="Add this material to your quote"
+                >
+                  {inSelection(selectedTile.id) ? "✓ Added" : "+ Add"}
+                </button>
               </div>
             )}
           </div>
@@ -139,6 +176,13 @@ export default function VisualizerClient({
           </div>
         )}
       </div>
+
+      <QuoteDialog
+        open={quoteOpen}
+        onClose={() => setQuoteOpen(false)}
+        selected={selections}
+        brandName={brandName}
+      />
     </div>
   );
 }
